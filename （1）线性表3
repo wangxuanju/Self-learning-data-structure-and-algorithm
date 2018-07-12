@@ -1,0 +1,372 @@
+循环链表
+初始化部分
+/*初始化循环链表*/
+void ds_init(node **pNode)
+{
+    int item;
+    node *temp;
+    node *target;
+
+    printf("输入结点的值，输入0完成初始化\n");
+
+	while(1)
+	{
+        scanf("%d", &item);
+        fflush(stdin);
+
+		if(item == 0)
+            return;
+
+        if((*pNode) == NULL)
+		{ /*循环链表中只有一个结点*/
+			*pNode = (node*)malloc(sizeof(struct CLinkList));
+			
+			if(!(*pNode))
+				exit(0);
+			
+			(*pNode)->data = item;
+			(*pNode)->next = *pNode;
+		}
+        else
+		{
+            /*找到next指向第一个结点的结点*/
+            for(target = (*pNode); target->next != (*pNode); target = target->next)
+				;
+
+            /*生成一个新的结点*/
+            temp = (node *)malloc(sizeof(struct CLinkList));
+
+			if(!temp)
+				exit(0);
+
+			temp->data = item;
+            temp->next = *pNode;
+            target->next = temp;
+        }
+    }
+}
+
+
+插入部分
+/*链表存储结构的定义*/
+typedef struct CLinkList
+{
+    int data;
+    struct CLinkList *next;
+}node;
+
+/*插入结点*/
+/*参数：链表的第一个结点，插入的位置*/
+void ds_insert(node **pNode , int i)
+{
+    node *temp;
+    node *target;
+    node *p;
+    int item;
+    int j = 1;
+
+    printf("输入要插入结点的值:");
+    scanf("%d", &item);
+
+    if(i == 1)
+	{ //新插入的结点作为第一个结点
+        temp = (node *)malloc(sizeof(struct CLinkList));
+
+		if(!temp)
+            exit(0);
+
+		temp->data = item;
+
+        /*寻找到最后一个结点*/
+        for(target = (*pNode); target->next != (*pNode); target = target->next)
+			;
+
+		temp->next = (*pNode);
+        target->next = temp;
+        *pNode = temp;
+    }
+    else
+	{
+        target = *pNode;
+
+		for( ; j < (i-1); ++j )
+		{
+			target = target->next;
+		}  
+		
+		// target指向第三个元素的
+		
+		temp = (node *)malloc(sizeof(struct CLinkList));
+
+		if(!temp)
+            exit(0);
+
+		temp->data = item;
+		
+        p = target->next;
+        target->next = temp;
+        temp->next = p;
+    }
+}
+
+
+删除部分
+/*删除结点*/
+void ds_delete(node **pNode, int i)
+{
+    node *target;
+    node *temp;
+    int j = 1;
+
+    if(i == 1)
+	{ //删除的是第一个结点
+        /*找到最后一个结点*/
+        for(target = *pNode; target->next != *pNode;target = target->next)
+			;
+
+		temp = *pNode;
+        *pNode = (*pNode)->next;
+        target->next = *pNode;
+        free(temp);
+    }
+    else
+	{
+        target = *pNode;
+
+		for( ; j < i-1; ++j)
+		{
+			target = target->next;
+		}
+		
+		temp = target->next;
+        target->next = temp->next;
+        free(temp);
+    }
+}
+
+
+返回节点所在的位置
+/*返回结点所在位置*/
+int ds_search(node *pNode, int elem)
+{
+    node *target;
+    int i = 1;
+
+    for(target = pNode; target->data != elem && target->next != pNode; ++i)
+	{
+		target = target->next;
+	}
+	
+	if(target->next == pNode) /*表中不存在该元素*/
+        return 0;
+    else
+        return i;
+}
+
+约瑟夫问题
+//n个人围圈报数，报m出列，最后剩下的是几号？
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct node
+{
+	int data;
+	struct node *next;
+}node;
+
+node *create(int n)
+{
+	node *p = NULL, *head;
+	head = (node*)malloc(sizeof (node ));
+	p = head;
+	node *s;
+	int i = 1;
+
+	if( 0 != n )
+	{
+		while( i <= n )
+		{
+			s = (node *)malloc(sizeof (node));
+			s->data = i++;    // 为循环链表初始化，第一个结点为1，第二个结点为2。
+			p->next = s;
+			p = s;
+		}
+		s->next = head->next;
+	}
+
+	free(head);
+
+	return s->next ;
+}
+
+int main()
+{
+	int n = 41;
+	int m = 3;
+	int i;
+	node *p = create(n);
+	node *temp;
+
+	m %= n;   // m在这里是等于2
+
+	while (p != p->next )
+	{
+		for (i = 1; i < m-1; i++)
+		{
+			p = p->next ;
+		}
+
+		printf("%d->", p->next->data );
+
+		temp = p->next ;				//删除第m个节点
+		p->next = temp->next ;
+		free(temp);
+
+		p = p->next ;
+	}
+
+	printf("%d\n", p->data );
+
+	return 0;
+}
+
+用循环链表模拟约瑟夫问题
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_NODE_NUM 100
+#define TRUE 1U
+#define FALSE 0U
+
+typedef struct NodeType
+{
+    int id;
+    int cipher;
+    struct NodeType *next;
+} NodeType;
+
+/* 创建单向循环链表 */
+static void CreaList(NodeType **, const int);
+/* 运行"约瑟夫环"问题 */
+static void StatGame(NodeType **, int);
+/* 打印循环链表 */
+static void PrntList(const NodeType *);
+/* 得到一个结点 */
+static NodeType *GetNode(const int, const int);
+/* 测试链表是否为空, 空为TRUE，非空为FALSE */
+static unsigned EmptyList(const NodeType *);
+
+int main(void)
+{
+    int n, m;
+    NodeType *pHead = NULL;
+    while (1)
+    {
+        printf("请输入人数n（最多%d个）: ", MAX_NODE_NUM);
+        scanf("%d", &n);
+        printf("和初始密码m: ");
+        scanf("%d", &m);
+        if (n > MAX_NODE_NUM)
+        {
+            printf("人数太多，请重新输入！\n");
+            continue;
+        }
+        else
+            break;
+    }
+    CreaList(&pHead, n);
+    printf("\n------------ 循环链表原始打印 -------------\n");
+    PrntList(pHead);
+    printf("\n-------------删除出队情况打印 -------------\n");
+    StatGame(&pHead, m);
+}
+
+static void CreaList(NodeType **ppHead, const int n)
+{
+    int i, iCipher;
+    NodeType *pNew, *pCur;
+    for (i = 1; i <= n; i++)
+    {
+        printf("输入第%d个人的密码: ", i);
+        scanf("%d", &iCipher);
+        pNew = GetNode(i, iCipher);
+        if (*ppHead == NULL)
+        {
+            *ppHead = pCur = pNew;
+            pCur->next = *ppHead;
+        }
+        else
+        {
+            pNew->next = pCur->next;
+            pCur->next = pNew;
+            pCur = pNew;
+        }
+    }
+    printf("完成单向循环链表的创建!\n");
+}
+
+static void StatGame(NodeType **ppHead, int iCipher)
+{
+    int iCounter, iFlag = 1;
+    NodeType *pPrv, *pCur, *pDel;
+    pPrv = pCur = *ppHead;
+    /* 将pPrv初始为指向尾结点，为删除作好准备 */
+    while (pPrv->next != *ppHead)
+        pPrv = pPrv->next;
+    while (iFlag)
+    {
+        for (iCounter = 1; iCounter < iCipher; iCounter++)
+        {
+            pPrv = pCur;
+            pCur = pCur->next;
+        }
+        if (pPrv == pCur)
+            iFlag = 0;
+        pDel = pCur; /* 删除pCur指向的结点，即有人出列 */
+        pPrv->next = pCur->next;
+        pCur = pCur->next;
+        iCipher = pDel->cipher;
+        printf("第%d个人出列, 密码: %d\n", pDel->id, pDel->cipher);
+        free(pDel);
+    }
+    *ppHead = NULL;
+    getchar();
+}
+
+static void PrntList(const NodeType *pHead)
+{
+    const NodeType *pCur = pHead;
+    if (EmptyList(pHead))
+        return;
+    do
+    {
+        printf("第%d个人, 密码: %d\n", pCur->id, pCur->cipher);
+        pCur = pCur->next;
+    }
+    while (pCur != pHead);
+    getchar();
+}
+
+static NodeType *GetNode(const int iId, const int iCipher)
+{
+    NodeType *pNew;
+    pNew = (NodeType *)malloc(sizeof(NodeType));
+    if(!pNew)
+    {
+        printf("Error, the memory is not enough!\n");
+        exit(-1);
+    }
+    pNew->id = iId;
+    pNew->cipher = iCipher;
+    pNew->next = NULL;
+    return pNew;
+}
+
+static unsigned EmptyList(const NodeType *pHead)
+{
+    if(!pHead)
+    {
+        printf("The list is empty!\n");
+        return TRUE;
+    }
+    return FALSE;
+}
