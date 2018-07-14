@@ -23,7 +23,7 @@ Status visit(ElemType c)
     printf("%d ",c);
     return OK;
 }
-
+/*线性表的单链表存储结构*/
 typedef struct Node
 {
     ElemType data;
@@ -79,7 +79,7 @@ int ListLength(LinkList L)
     return i;
 }
 
-/* 初始条件：顺序线性表L已存在，1≤i≤ListLength(L) */
+/* 初始条件：顺序线性表L已存在，1≤i≤ListLength(L) *//*单链表的读取*/
 /* 操作结果：用e返回L中第i个数据元素的值 */
 Status GetElem(LinkList L,int i,ElemType *e)
 {
@@ -117,7 +117,7 @@ int LocateElem(LinkList L,ElemType e)
 }
 
 
-/* 初始条件：顺序线性表L已存在,1≤i≤ListLength(L)， */
+/* 初始条件：顺序线性表L已存在,1≤i≤ListLength(L)， *//*单链表的插入*/
 /* 操作结果：在L中第i个位置之前插入新的数据元素e，L的长度加1 */
 Status ListInsert(LinkList *L,int i,ElemType e)
 { 
@@ -139,7 +139,7 @@ Status ListInsert(LinkList *L,int i,ElemType e)
 	return OK;
 }
 
-/* 初始条件：顺序线性表L已存在，1≤i≤ListLength(L) */
+/* 初始条件：顺序线性表L已存在，1≤i≤ListLength(L) *//*单链表的删除*/
 /* 操作结果：删除L的第i个数据元素，并用e返回其值，L的长度减1 */
 Status ListDelete(LinkList *L,int i,ElemType *e) 
 { 
@@ -175,7 +175,7 @@ Status ListTraverse(LinkList L)
     return OK;
 }
 
-/*  随机产生n个元素的值，建立带表头结点的单链线性表L（头插法） */
+/*  随机产生n个元素的值，建立带表头结点的单链线性表L（头插法） *//*单链表的整表创建*/
 void CreateListHead(LinkList *L, int n) 
 {
 	LinkList p;
