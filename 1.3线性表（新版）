@@ -44,7 +44,7 @@ Status InitList(StaticLinkList space)
 }
 
 
-/* 若备用空间链表非空，则返回分配的结点下标，否则返回0 */
+/* 若备用空间链表非空，则返回分配的结点下标，否则返回0 *//*静态链表中操作的是数组，节点的申请和释放用malloc()和free()两个函数来实现*/
 int Malloc_SSL(StaticLinkList space) 
 { 
 	int i = space[0].cur;           		/* 当前数组第一个元素的cur存的值 */
